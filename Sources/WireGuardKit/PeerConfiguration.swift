@@ -12,6 +12,7 @@ public struct PeerConfiguration {
     public var rxBytes: UInt64?
     public var txBytes: UInt64?
     public var lastHandshakeTime: Date?
+    public var udpstuffing: Bool
 
     public init(publicKey: PublicKey) {
         self.publicKey = publicKey
@@ -24,7 +25,8 @@ extension PeerConfiguration: Equatable {
             lhs.preSharedKey == rhs.preSharedKey &&
             Set(lhs.allowedIPs) == Set(rhs.allowedIPs) &&
             lhs.endpoint == rhs.endpoint &&
-            lhs.persistentKeepAlive == rhs.persistentKeepAlive
+            lhs.persistentKeepAlive == rhs.persistentKeepAlive &&
+            lhs.udpstuffing == rhs.udpstuffing
     }
 }
 
@@ -35,6 +37,7 @@ extension PeerConfiguration: Hashable {
         hasher.combine(Set(allowedIPs))
         hasher.combine(endpoint)
         hasher.combine(persistentKeepAlive)
+        hasher.combine(udpstuffing)
 
     }
 }
