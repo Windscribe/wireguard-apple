@@ -85,8 +85,9 @@ class PacketTunnelSettingsGenerator {
          * a valid IP address that will actually route over the Internet.
          */
         let networkSettings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "127.0.0.1")
-
-        if !tunnelConfiguration.interface.dnsSearch.isEmpty || !tunnelConfiguration.interface.dns.isEmpty {
+        if let dnsSettings = tunnelConfiguration.dnsSettings {
+            networkSettings.dnsSettings = dnsSettings
+        } else if !tunnelConfiguration.interface.dnsSearch.isEmpty || !tunnelConfiguration.interface.dns.isEmpty {
             let dnsServerStrings = tunnelConfiguration.interface.dns.map { $0.stringRepresentation }
             let dnsSettings = NEDNSSettings(servers: dnsServerStrings)
             dnsSettings.searchDomains = tunnelConfiguration.interface.dnsSearch
