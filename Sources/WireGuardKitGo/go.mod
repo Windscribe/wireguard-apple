@@ -8,3 +8,4 @@ require (
 	golang.org/x/sys v0.0.0-20210921065528-437939a70204
 	golang.zx2c4.com/wireguard v0.0.0-20210905140043-2ef39d47540c
 )
+replace golang.zx2c4.com/wireguard => github.com/Windscribe/wireguard v1.0.3
