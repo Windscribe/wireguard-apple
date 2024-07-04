@@ -70,6 +70,9 @@ class PacketTunnelSettingsGenerator {
                 wgSettings.append("replace_allowed_ips=true\n")
                 peer.allowedIPs.forEach { wgSettings.append("allowed_ip=\($0.stringRepresentation)\n") }
             }
+            if let udpStuffing = peer.udpstuffing, udpstuffing {
+               wgSettings.append("udp_stuffing=true\n")
+            }
         }
         return (wgSettings, resolutionResults)
     }
