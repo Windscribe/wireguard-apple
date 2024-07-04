@@ -12,7 +12,7 @@ public struct PeerConfiguration {
     public var rxBytes: UInt64?
     public var txBytes: UInt64?
     public var lastHandshakeTime: Date?
-    public var udpstuffing: Bool
+    public var udpstuffing: Bool?
 
     public init(publicKey: PublicKey) {
         self.publicKey = publicKey
