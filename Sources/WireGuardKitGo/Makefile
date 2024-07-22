@@ -3,7 +3,7 @@
 # Copyright (C) 2018-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 
 # These are generally passed to us by xcode, but we set working defaults for standalone compilation too.
-ARCHS ?= x86_64 arm64
+ARCHS ?= arm64
 PLATFORM_NAME ?= macosx
 SDKROOT ?= $(shell xcrun --sdk $(PLATFORM_NAME) --show-sdk-path)
 CONFIGURATION_BUILD_DIR ?= $(CURDIR)/out
@@ -20,6 +20,7 @@ GOARCH_arm64 := arm64
 GOARCH_x86_64 := amd64
 GOOS_macosx := darwin
 GOOS_iphoneos := ios
+GOOS_appletvos := ios
 
 build: $(DESTDIR)/libwg-go.a
 version-header: $(DESTDIR)/wireguard-go-version.h
@@ -40,7 +41,7 @@ $(BUILDDIR)/libwg-go-$(1).a: export CGO_LDFLAGS := $(CFLAGS_PREFIX) $(ARCH)
 $(BUILDDIR)/libwg-go-$(1).a: export GOOS := $(GOOS_$(PLATFORM_NAME))
 $(BUILDDIR)/libwg-go-$(1).a: export GOARCH := $(GOARCH_$(1))
 $(BUILDDIR)/libwg-go-$(1).a: $(GOROOT)/.prepared go.mod
-	go build -ldflags=-w -trimpath -v -o "$(BUILDDIR)/libwg-go-$(1).a" -buildmode c-archive
+	go build -ldflags=-w -trimpath -v -o "$(BUILDDIR)/libwg-go-$(1).a" -buildmode c-archive -tags=ios
 	rm -f "$(BUILDDIR)/libwg-go-$(1).h"
 endef
 $(foreach ARCH,$(ARCHS),$(eval $(call libwg-go-a,$(ARCH))))
