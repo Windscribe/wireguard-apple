@@ -22,6 +22,7 @@ GOOS_macosx := darwin
 GOOS_iphoneos := ios
 GOOS_appletvos := ios
 GOOS_iphonesimulator := ios
+GOOS_appletvsimulator := ios
 
 build: $(DESTDIR)/libwg-go.a
 version-header: $(DESTDIR)/wireguard-go-version.h
