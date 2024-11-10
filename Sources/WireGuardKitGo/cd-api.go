@@ -3,15 +3,13 @@ package main
 import "C"
 import (
 	"github.com/Control-D-Inc/ctrld/cmd/cli"
-	"sync"
 )
 
 var (
-	controller  *Controller
-	hostName    *string
-	lanIp       *string
-	macAddress  *string
-	metaDataMux sync.Mutex // Mutex for thread safety
+	controller *Controller
+	hostName   *string
+	lanIp      *string
+	macAddress *string
 )
 
 // Controller holds global state
@@ -28,17 +26,12 @@ func NewController() *Controller {
 
 //export SetMetaData
 func SetMetaData(newHostName, newLanIp, newMacAddress string) {
-	metaDataMux.Lock()
-	defer metaDataMux.Unlock()
-
 	hostName = &newHostName
 	lanIp = &newLanIp
 	macAddress = &newMacAddress
 }
 
 func safeString(s *string) string {
-	metaDataMux.Lock()
-	defer metaDataMux.Unlock()
 	if s == nil {
 		return ""
 	}
