@@ -21,8 +21,8 @@ var rootCmd = &cobra.Command{
 	Short: "Starts local proxy and connects to server.",
 	Long:  "Starts local proxy and sets up connection to the server. At minimum it requires remote server address and log file path.",
 	Run: func(cmd *cobra.Command, args []string) {
-		Initialise(dev, logFilePath)
-		started := StartProxy(listenAddress, remoteAddress, tunnelType, mtu, extraTlsPadding)
+		Initialise(dev, C.CString(logFilePath))
+		started := StartProxy(C.CString(listenAddress), C.CString(remoteAddress), tunnelType, mtu, extraTlsPadding)
 		if started == false {
 			os.Exit(0)
 		}
@@ -45,14 +45,14 @@ func init() {
 var primaryListenerSocketFd int = -1
 
 //export Initialise
-func Initialise(development bool, logFilePath string) {
-	cli.InitLogger(development, logFilePath)
+func Initialise(development bool, logFilePath *C.char) {
+	cli.InitLogger(development, C.GoString(logFilePath))
 }
 
 //export StartProxy
-func StartProxy(listenAddress string, remoteAddress string, tunnelType int, mtu int, extraPadding bool) bool {
+func StartProxy(listenAddress *C.char, remoteAddress *C.char, tunnelType int, mtu int, extraPadding bool) bool {
 	cli.Logger.Infof("Starting proxy with listenAddress: %s remoteAddress %s tunnelType: %d mtu %d", listenAddress, remoteAddress, tunnelType, mtu)
-	err := cli.NewHTTPClient(listenAddress, remoteAddress, tunnelType, mtu, func(fd int) {
+	err := cli.NewHTTPClient(C.GoString(listenAddress), C.GoString(remoteAddress), tunnelType, mtu, func(fd int) {
 		primaryListenerSocketFd = fd
 		cli.Logger.Info("Socket ready to protect.")
 	}, cli.Channel, extraPadding).Run()

@@ -46,7 +46,7 @@ func safeString(s *string) string {
 }
 
 //export StartCd
-func StartCd(CdUID, HomeDir, UpstreamProto string, logLevel int, logPath string) {
+func StartCd(CdUID *C.char, HomeDir *C.char, UpstreamProto *C.char, logLevel int, logPath *C.char) {
 	if controller != nil {
 		return
 	}
@@ -68,11 +68,11 @@ func StartCd(CdUID, HomeDir, UpstreamProto string, logLevel int, logPath string)
 	if controller.stopCh == nil {
 		controller.stopCh = make(chan struct{})
 		controller.Config = cli.AppConfig{
-			CdUID:         CdUID,
-			HomeDir:       HomeDir,
-			UpstreamProto: UpstreamProto,
+			CdUID:         C.GoString(CdUID),
+			HomeDir:       C.GoString(HomeDir),
+			UpstreamProto: C.GoString(UpstreamProto),
 			Verbose:       logLevel,
-			LogPath:       logPath,
+			LogPath:       C.GoString(logPath),
 		}
 		cli.RunMobile(&controller.Config, &callback, controller.stopCh)
 	}
