@@ -7,9 +7,9 @@ import (
 
 var (
 	controller *Controller
-	hostName   *string
-	lanIp      *string
-	macAddress *string
+	hostName   *C.char
+	lanIp      *C.char
+	macAddress *C.char
 )
 
 // Controller holds global state
@@ -25,17 +25,17 @@ func NewController() *Controller {
 }
 
 //export SetMetaData
-func SetMetaData(newHostName, newLanIp, newMacAddress string) {
-	hostName = &newHostName
-	lanIp = &newLanIp
-	macAddress = &newMacAddress
+func SetMetaData(newHostName *C.char, newLanIp *C.char, newMacAddress *C.char) {
+	hostName = newHostName
+	lanIp = newLanIp
+	macAddress = newMacAddress
 }
 
-func safeString(s *string) string {
+func safeString(s *C.char) string {
 	if s == nil {
 		return ""
 	}
-	return *s
+	return C.GoString(s)
 }
 
 //export StartCd
