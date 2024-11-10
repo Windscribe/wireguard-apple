@@ -29,7 +29,7 @@ extern void Stop();
 extern void StartCd(const char *cdUID, const char *homeDir, const char *upstreamProto,
         int logLevel, const char *logPath);
 extern int StopCd(bool restart, int pin);
-extern void SetMetaData(newHostName *C.char, newLanIp *C.char, newMacAddress *C.char)
+extern void SetMetaData(const char *newHostName, const char *newLanIp, const char *newMacAddress)
 extern bool IsCdRunning();
 
 #endif
