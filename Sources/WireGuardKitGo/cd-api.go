@@ -46,13 +46,13 @@ func StartCd(CdUID *C.char, HomeDir *C.char, UpstreamProto *C.char, logLevel int
 	controller = NewController()
 	callback := cli.AppCallback{
 		HostName: func() string {
-			return safeString(hostName)
+			return ""
 		},
 		LanIp: func() string {
-			return safeString(lanIp)
+			return ""
 		},
 		MacAddress: func() string {
-			return safeString(macAddress)
+			return ""
 		},
 		Exit: func(err string) {
 			// Handle exit callback if needed
