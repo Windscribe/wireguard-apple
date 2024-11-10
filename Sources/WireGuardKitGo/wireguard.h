@@ -20,4 +20,16 @@ extern void wgBumpSockets(int handle);
 extern void wgDisableSomeRoamingForBrokenMobileSemantics(int handle);
 extern const char *wgVersion();
 
+//Wstunnel
+struct go_string { const char *str; long n; };
+extern void Initialise(bool development, struct go_string logPath);
+extern bool StartProxy(struct go_string listenAddress, struct go_string remoteAddress, int tunnelType, long mtu , bool extraPadding);
+extern void Stop();
+
+//Cd
+extern void StartCd(struct go_string cdUID, struct go_string homeDir, struct go_string upstreamProto,
+        int logLevel, struct go_string logPath);
+extern int StopCd(bool restart, int pin);
+extern bool IsCdRunning();
+
 #endif
