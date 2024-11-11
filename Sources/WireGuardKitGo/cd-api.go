@@ -7,9 +7,9 @@ import (
 
 var (
 	controller *Controller
-	hostName   *C.char
-	lanIp      *C.char
-	macAddress *C.char
+	hostName   string
+	lanIp      string
+	macAddress string
 )
 
 // Controller holds global state
@@ -26,16 +26,9 @@ func NewController() *Controller {
 
 //export SetMetaData
 func SetMetaData(newHostName *C.char, newLanIp *C.char, newMacAddress *C.char) {
-	hostName = newHostName
-	lanIp = newLanIp
-	macAddress = newMacAddress
-}
-
-func safeString(s *C.char) string {
-	if s == nil {
-		return ""
-	}
-	return C.GoString(s)
+	hostName = C.GoString(newHostName)
+	lanIp = C.GoString(newLanIp)
+	macAddress = C.GoString(newMacAddress)
 }
 
 //export StartCd
@@ -46,13 +39,13 @@ func StartCd(CdUID *C.char, HomeDir *C.char, UpstreamProto *C.char, logLevel int
 	controller = NewController()
 	callback := cli.AppCallback{
 		HostName: func() string {
-			return safeString(hostName)
+			return hostName
 		},
 		LanIp: func() string {
-			return safeString(lanIp)
+			return lanIp
 		},
 		MacAddress: func() string {
-			return safeString(macAddress)
+			return macAddress
 		},
 		Exit: func(err string) {
 			// Handle exit callback if needed
