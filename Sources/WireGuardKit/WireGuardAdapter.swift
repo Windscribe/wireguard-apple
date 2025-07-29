@@ -428,7 +428,9 @@ public class WireGuardAdapter {
                 self.logEndpointResolutionResults(resolutionResults)
 
                 wgSetConfig(handle, wgConfig)
+#if os(iOS)
                 wgDisableSomeRoamingForBrokenMobileSemantics(handle)
+#endif
                 wgBumpSockets(handle)
             } else {
                 self.logHandler(.verbose, "Connectivity offline, pausing backend.")
