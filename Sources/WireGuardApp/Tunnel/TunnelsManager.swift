@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright © 2018-2021 WireGuard LLC. All Rights Reserved.
+// Copyright © 2018-2023 WireGuard LLC. All Rights Reserved.
 
 import Foundation
 import NetworkExtension
@@ -206,7 +206,10 @@ class TunnelsManager {
         }
     }
 
-    func modify(tunnel: TunnelContainer, tunnelConfiguration: TunnelConfiguration, onDemandOption: ActivateOnDemandOption, completionHandler: @escaping (TunnelsManagerError?) -> Void) {
+    func modify(tunnel: TunnelContainer, tunnelConfiguration: TunnelConfiguration,
+                onDemandOption: ActivateOnDemandOption,
+                shouldEnsureOnDemandEnabled: Bool = false,
+                completionHandler: @escaping (TunnelsManagerError?) -> Void) {
         let tunnelName = tunnelConfiguration.name ?? ""
         if tunnelName.isEmpty {
             completionHandler(TunnelsManagerError.tunnelNameEmpty)
@@ -214,6 +217,20 @@ class TunnelsManager {
         }
 
         let tunnelProviderManager = tunnel.tunnelProvider
+
+        let isIntroducingOnDemandRules = (tunnelProviderManager.onDemandRules ?? []).isEmpty && onDemandOption != .off
+        if isIntroducingOnDemandRules && tunnel.status != .inactive && tunnel.status != .deactivating {
+            tunnel.onDeactivated = { [weak self] in
+                self?.modify(tunnel: tunnel, tunnelConfiguration: tunnelConfiguration,
+                             onDemandOption: onDemandOption, shouldEnsureOnDemandEnabled: true,
+                             completionHandler: completionHandler)
+            }
+            self.startDeactivation(of: tunnel)
+            return
+        } else {
+            tunnel.onDeactivated = nil
+        }
+
         let oldName = tunnelProviderManager.localizedDescription ?? ""
         let isNameChanged = tunnelName != oldName
         if isNameChanged {
@@ -231,8 +248,11 @@ class TunnelsManager {
         }
         tunnelProviderManager.isEnabled = true
 
-        let isActivatingOnDemand = !tunnelProviderManager.isOnDemandEnabled && onDemandOption != .off
+        let isActivatingOnDemand = !tunnelProviderManager.isOnDemandEnabled && shouldEnsureOnDemandEnabled
         onDemandOption.apply(on: tunnelProviderManager)
+        if shouldEnsureOnDemandEnabled {
+            tunnelProviderManager.isOnDemandEnabled = true
+        }
 
         tunnelProviderManager.saveToPreferences { [weak self] error in
             if let error = error {
@@ -499,6 +519,11 @@ class TunnelsManager {
                 }
             }
 
+            if session.status == .disconnected {
+                tunnel.onDeactivated?()
+                tunnel.onDeactivated = nil
+            }
+
             if tunnel.status == .restarting && session.status == .disconnected {
                 tunnel.startActivation(activationDelegate: self.activationDelegate)
                 return
@@ -569,6 +594,7 @@ class TunnelContainer: NSObject {
     var activationAttemptId: String?
     var activationTimer: Timer?
     var deactivationTimer: Timer?
+    var onDeactivated: (() -> Void)?
 
     fileprivate var tunnelProvider: NETunnelProviderManager {
         didSet {
