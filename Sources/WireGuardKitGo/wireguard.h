@@ -20,4 +20,10 @@ extern void wgBumpSockets(int handle);
 extern void wgDisableSomeRoamingForBrokenMobileSemantics(int handle);
 extern const char *wgVersion();
 
+// CheckIP through tunnel functions
+extern int32_t wgSetupCheckIPTunnel(const char *localIP, const char *dnsServer, const char *settings);
+extern char *wgCheckIP(void);
+extern int32_t wgCheckIPWaitForHandshake(int32_t timeoutSecs);
+extern void wgCleanupCheckIPTunnel(void);
+
 #endif
